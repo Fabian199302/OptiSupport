@@ -1,0 +1,237 @@
+{
+  "parametros": {
+    "lambda_valle_tickets_min": 0.5,
+    "lambda_pico_tickets_min": 1.5,
+    "tiempo_servicio_min": 15.0,
+    "mu_tickets_min": 0.066667,
+    "c_tecnicos": 9,
+    "rho_base": 0.8333,
+    "rho_config_entrega1_c4": 1.875,
+    "pool_conexiones_C6": 50,
+    "paciencia_media_min": 30.0,
+    "prob_reintento": 0.4,
+    "max_reintentos": 2,
+    "horizonte_min": 480.0,
+    "warmup_min": 60.0,
+    "n_replicas": 30,
+    "semillas": "42..71",
+    "sla_p95_atencion_min": 45.0,
+    "sla_abandono_max": 0.03,
+    "sla_utilizacion_objetivo": [
+      0.7,
+      0.85
+    ]
+  },
+  "escenarios": {
+    "markoviano_base": {
+      "W_medio_min": {
+        "media": 20.00040765947184,
+        "desv": 3.4899421482660142,
+        "ic95_semiancho": 1.3030194932471233,
+        "n": 30
+      },
+      "W_p95_min": {
+        "media": 57.08159210617007,
+        "desv": 12.249505944575983,
+        "ic95_semiancho": 4.57352711028733,
+        "n": 30
+      },
+      "W_p99_min": {
+        "media": 82.26950761768312,
+        "desv": 14.054968716121419,
+        "ic95_semiancho": 5.2476222917288196,
+        "n": 30
+      },
+      "Wq_medio_min": {
+        "media": 5.031887996898596,
+        "desv": 3.1878696115552687,
+        "ic95_semiancho": 1.1902364192055457,
+        "n": 30
+      },
+      "tasa_abandono": {
+        "media": 0.0,
+        "desv": 0.0,
+        "ic95_semiancho": 0.0,
+        "n": 30
+      },
+      "tasa_rechazo": {
+        "media": 0.0,
+        "desv": 0.0,
+        "ic95_semiancho": 0.0,
+        "n": 30
+      },
+      "utilizacion": {
+        "media": 0.8245094919836882,
+        "desv": 0.029202601563182058,
+        "ic95_semiancho": 0.010903206263536816,
+        "n": 30
+      },
+      "L_medio": {
+        "media": 9.98500759884769,
+        "desv": 1.7742012054833434,
+        "ic95_semiancho": 0.6624232315243317,
+        "n": 30
+      },
+      "Lq_medio": {
+        "media": 2.516996672522156,
+        "desv": 1.5855095626245548,
+        "ic95_semiancho": 0.5919725253485899,
+        "n": 30
+      },
+      "totales": {
+        "llegados": 40118,
+        "resueltos": 39828,
+        "abandonados": 0,
+        "rechazados": 0,
+        "reintentos": 0,
+        "replicas": 30
+      },
+      "config": {
+        "modo": "markoviano",
+        "estrategia": "round_robin",
+        "horizonte_min": 3000.0,
+        "warmup_min": 300.0
+      }
+    },
+    "roundrobin_real": {
+      "W_medio_min": {
+        "media": 21.81886551719692,
+        "desv": 1.6202609640593175,
+        "ic95_semiancho": 0.6049474548928089,
+        "n": 30
+      },
+      "W_p95_min": {
+        "media": 44.11989460229989,
+        "desv": 2.7449687780993797,
+        "ic95_semiancho": 1.0248730993994684,
+        "n": 30
+      },
+      "W_p99_min": {
+        "media": 54.87318896979878,
+        "desv": 5.396277370288101,
+        "ic95_semiancho": 2.014776837474889,
+        "n": 30
+      },
+      "Wq_medio_min": {
+        "media": 6.972149081546041,
+        "desv": 1.392053290400714,
+        "ic95_semiancho": 0.5197428770938669,
+        "n": 30
+      },
+      "tasa_abandono": {
+        "media": 0.1372050462746737,
+        "desv": 0.05300297560488985,
+        "ic95_semiancho": 0.019789414116101543,
+        "n": 30
+      },
+      "tasa_rechazo": {
+        "media": 0.0,
+        "desv": 0.0,
+        "ic95_semiancho": 0.0,
+        "n": 30
+      },
+      "utilizacion": {
+        "media": 0.8810351969126948,
+        "desv": 0.04747663106124781,
+        "ic95_semiancho": 0.017726074851196177,
+        "n": 30
+      },
+      "L_medio": {
+        "media": 14.52162270608567,
+        "desv": 2.1733036827580317,
+        "ic95_semiancho": 0.8114338126740845,
+        "n": 30
+      },
+      "Lq_medio": {
+        "media": 6.38665288082509,
+        "desv": 1.8731752039801786,
+        "ic95_semiancho": 0.699376580286879,
+        "n": 30
+      },
+      "totales": {
+        "llegados": 8057,
+        "resueltos": 6563,
+        "abandonados": 1134,
+        "rechazados": 0,
+        "reintentos": 447,
+        "replicas": 30
+      },
+      "config": {
+        "modo": "real",
+        "estrategia": "round_robin",
+        "horizonte_min": 480.0,
+        "warmup_min": 60.0
+      }
+    },
+    "skillbased_real": {
+      "W_medio_min": {
+        "media": 17.010483922820043,
+        "desv": 1.5612171900605494,
+        "ic95_semiancho": 0.5829026228564103,
+        "n": 30
+      },
+      "W_p95_min": {
+        "media": 37.664489655681045,
+        "desv": 3.536886841169508,
+        "ic95_semiancho": 1.3205469614282632,
+        "n": 30
+      },
+      "W_p99_min": {
+        "media": 46.727954737040555,
+        "desv": 3.7764871872199777,
+        "ic95_semiancho": 1.4100051553549557,
+        "n": 30
+      },
+      "Wq_medio_min": {
+        "media": 5.049180966934649,
+        "desv": 1.2815721088909098,
+        "ic95_semiancho": 0.4784931580359808,
+        "n": 30
+      },
+      "tasa_abandono": {
+        "media": 0.053694441472076665,
+        "desv": 0.0340391703268284,
+        "ic95_semiancho": 0.012709007939244408,
+        "n": 30
+      },
+      "tasa_rechazo": {
+        "media": 0.0,
+        "desv": 0.0,
+        "ic95_semiancho": 0.0,
+        "n": 30
+      },
+      "utilizacion": {
+        "media": 0.7768809254474861,
+        "desv": 0.055367367580701585,
+        "ic95_semiancho": 0.020672193458358117,
+        "n": 30
+      },
+      "L_medio": {
+        "media": 10.963590668959387,
+        "desv": 1.8505912060171956,
+        "ic95_semiancho": 0.69094452372805,
+        "n": 30
+      },
+      "Lq_medio": {
+        "media": 3.8620849592316375,
+        "desv": 1.4737154309557818,
+        "ic95_semiancho": 0.5502325976917881,
+        "n": 30
+      },
+      "totales": {
+        "llegados": 7867,
+        "resueltos": 7242,
+        "abandonados": 437,
+        "rechazados": 0,
+        "reintentos": 176,
+        "replicas": 30
+      },
+      "config": {
+        "modo": "real",
+        "estrategia": "skill_based",
+        "horizonte_min": 480.0,
+        "warmup_min": 60.0
+      }
+    }
+  }
+}

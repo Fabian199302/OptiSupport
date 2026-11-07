@@ -1,0 +1,22 @@
+# archivo: .gitignore
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+env/
+
+# Base de datos local (SQLite de pruebas sin Docker)
+*.db
+optisupport_local.db
+
+# Artefactos del sistema operativo / editores
+.DS_Store
+.idea/
+.vscode/
+
+# NOTA: se versionan intencionalmente como evidencia reproducible:
+#   - simulacion/resultados_simulacion.json
+#   - datos/telemetry_log.csv
+#   - docs/figuras/*.png

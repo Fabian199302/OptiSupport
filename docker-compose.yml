@@ -1,0 +1,55 @@
+# archivo: docker-compose.yml
+# ============================================================================
+#  OptiSupport — Orquestacion de dos servicios: API REST + Base de datos
+#  Modelos y Simulacion 2026-2 · I.U. Pascual Bravo · Grupo 3
+#
+#  Levantar todo:   docker compose up --build -d
+#  Ver la API:      http://localhost:8000/docs
+#  Detener:         docker compose down
+# ============================================================================
+
+services:
+  # -------------------------------------------------------------------- #
+  #  Servicio 1: Base de datos PostgreSQL (persistencia)
+  # -------------------------------------------------------------------- #
+  db:
+    image: postgres:16-alpine
+    container_name: optisupport_db
+    environment:
+      POSTGRES_USER: optisupport
+      POSTGRES_PASSWORD: optisupport
+      POSTGRES_DB: optisupport
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U optisupport -d optisupport"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  # -------------------------------------------------------------------- #
+  #  Servicio 2: API REST FastAPI (sistema real + telemetria)
+  # -------------------------------------------------------------------- #
+  api:
+    build:
+      context: .                      # contexto = raiz (incluye config/ y sistema_real/)
+      dockerfile: sistema_real/Dockerfile
+    container_name: optisupport_api
+    environment:
+      # LIMITE DURO C6: el pool de SQLAlchemy se fija a 50 conexiones en database.py.
+      DATABASE_URL: "postgresql+psycopg2://optisupport:optisupport@db:5432/optisupport"
+      TELEMETRY_PATH: "/app/datos/telemetry_log.csv"
+    ports:
+      - "8000:8000"
+    volumes:
+      # La telemetria queda accesible en el host en ./datos/telemetry_log.csv
+      - ./datos:/app/datos
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  pgdata:
