@@ -17,7 +17,7 @@
 ---
 
 ## 📋 Tabla de Contenidos
-1. [Requisitos Previos](#-requisitos-previos)
+1. [Requisitos Previos](#requisitos-previos)
 2. [Paso 1: Levantar el Sistema Real (API + Base de Datos)](#1-levantar-el-sistema-real-api--base-de-datos)
 3. [Paso 2: Ejecutar la Simulación SimPy](#2-ejecutar-la-simulación-simpy)
 4. [Paso 3: Contraste Analítico M/M/c vs. SimPy](#3-contraste-analítico-mmc-vs-simpy)
