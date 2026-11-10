@@ -198,4 +198,4 @@ def generar_figuras(resultados: Dict) -> None:
 
 
 if __name__ == "__main__":
-    main()
+    main()"# Revisi¢n de par metros - Yulisa" 
