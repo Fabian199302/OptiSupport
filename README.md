@@ -1,96 +1,133 @@
-# archivo: README.md
+# OptiSupport — Gemelo Digital de una Mesa de Soporte Técnico
 
-# OptiSupport — Gemelo digital de una mesa de soporte técnico
+[![Modelos y Simulación](https://img.shields.io/badge/I.U.%20Pascual%20Bravo-Modelos%20y%20Simulaci%C3%B3n%202026--2-blue?style=flat-square)](https://github.com/Fabian199302/OptiSupport)
+[![Python 3.11+](https://img.shields.io/badge/Python-3.11%252B-yellow.svg?style=flat-square&logo=python&logoColor=white)](https://www.python.org/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.100%252B-009688.svg?style=flat-square&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
+[![Docker](https://img.shields.io/badge/Docker-Compose-2496ED.svg?style=flat-square&logo=docker&logoColor=white)](https://www.docker.com/)
 
-**Modelos y Simulación (2026-2) · I.U. Pascual Bravo · Grupo 3**
+Simulación de eventos discretos (**DES**) de un sistema de asignación de tickets de soporte, con una API REST real contenerizada, telemetría integrada, un modelo estocástico en **SimPy** con dos políticas de asignación (patrón *Strategy*) y validación analítica mediante colas **M/M/c**.
 
-Simulación de eventos discretos (DES) de un sistema de asignación de tickets de
-soporte, con API REST real contenerizada, telemetría, modelo SimPy con dos
-políticas de asignación (patrón Strategy) y validación analítica M/M/c.
-
-> **Subsanación clave de la Entrega 1:** se corrigió la inconsistencia de tasas
-> (μ = 1/15 = 0.0667 tickets/min como valor canónico) y se recalibró el sistema
-> a **c = 9 técnicos**, logrando **ρ = 0.833 (estable, < 0.85)** en vez del
-> ρ = 1.875 inestable con c = 4. API y simulación comparten los parámetros desde
-> `config/parametros.py` (fuente única de verdad).
+> 💡 **Subsanación clave de la Entrega 1:** Se corrigió la inconsistencia de tasas ($\mu = 1/15 = 0.0667$ tickets/min como valor canónico) y se recalibró el sistema a **$c = 9$ técnicos**, logrando una intensidad de tráfico estable de $\rho = 0.833$ ($< 0.85$) en lugar del $\rho = 1.875$ inestable obtenido previamente con $c = 4$. La API y la simulación comparten de forma estricta los mismos parámetros desde `config/parametros.py` (Fuente Única de Verdad).
 
 ---
 
-## Requisitos
+## Integrantes del Grupo3
+* **Fabian Eliecer Montoya**
+* **Mateo Corrales**
+* **Stefanny Higuita**
 
-- **Docker** y **Docker Compose** (para la API + base de datos).
-- **Python 3.11+** (para la simulación y el análisis).
+---
 
-## 1) Levantar el sistema real (API + base de datos)
+## 📋 Tabla de Contenidos
+1. [Requisitos Previos](#-requisitos-previos)
+2. [Paso 1: Levantar el Sistema Real (API + Base de Datos)](#1-levantar-el-sistema-real-api--base-de-datos)
+3. [Paso 2: Ejecutar la Simulación SimPy](#2-ejecutar-la-simulación-simpy)
+4. [Paso 3: Contraste Analítico M/M/c vs. SimPy](#3-contraste-analítico-mmc-vs-simpy)
+5. [Ejecución Rápida (Todo en uno)](#-ejecución-rápida-todo-en-uno)
+6. [Parámetros del Modelo](#-parámetros-del-modelo)
+7. [Estructura del Repositorio](#-estructura-del-repositorio)
 
-Un solo comando levanta los **dos servicios** (FastAPI + PostgreSQL):
+---
+
+## 🛠️ Requisitos Previos
+
+Asegúrate de tener instalado en tu computadora lo siguiente antes de comenzar:
+- **[Git](https://git-scm.com/)** (para clonar el repositorio).
+- **[Docker y Docker Compose](https://www.docker.com/)** (para levantar la base de datos PostgreSQL y el servicio de la API).
+- **[Python](https://www.python.org/) (Versión 3.11 o superior)** (para la ejecución de los scripts de simulación y análisis).
+
+---
+
+## Guía de Instalación y Ejecución Paso a Paso
+
+### Clonar el repositorio
+Si aún no lo has descargado en tu máquina local, abre tu terminal y ejecuta:
+```bash
+git clone [https://github.com/Fabian199302/OptiSupport.git](https://github.com/Fabian199302/OptiSupport.git)
+cd OptiSupport
+
+## 1) Levantar el Sistema Real (API + Base de Datos)
+
+Un solo comando mediante Docker Compose se encarga de poner en marcha los dos servicios necesarios (FastAPI y PostgreSQL):
 
 ```bash
 docker compose up --build -d
 ```
 
-- API disponible en **http://localhost:8000** (documentación interactiva en `/docs`).
-- Endpoints: `GET /health`, `GET /parametros`, `POST /tickets`, `GET /tickets/{id}`,
-  `GET /estado`, `GET /metricas`.
-- Límite duro **C6**: el pool de conexiones está fijado a **50** (`pool_size=50,
-max_overflow=0`) en `sistema_real/database.py`.
+- API Interactiva: Disponible en http://localhost:8000 (puedes probar la documentación visual en /docs).
 
-Generar **telemetría real** (latencias + uso del pool) en `datos/telemetry_log.csv`:
+- Endpoints principales: GET /health, GET /parametros, POST /tickets, GET /tickets/{id}, GET /estado, GET /metricas.
+
+- Límite de Conexiones (C6): El pool de conexiones está fijado estrictamente a 50 (pool_size=50, max_overflow=0) en sistema_real/database.py.
+
+Generar telemetría real
+
+Para simular tráfico y registrar latencias y uso del pool de conexiones en datos/telemetry_log.csv:
 
 ```bash
-# con la API levantada
 pip install requests
 python sistema_real/generar_carga.py --n 300 --acelerado
 ```
 
-Comprobar estado y métricas:
+Comprobar estado y métricas vía terminal:
 
 ```bash
 curl http://localhost:8000/estado
 curl http://localhost:8000/metricas
 ```
 
-Detener:
+Para detener los servicios cuando termines:
 
 ```bash
-docker compose down          # conserva el volumen de datos
-docker compose down -v       # borra también la base de datos
+docker compose down (Conserva los datos de la base de datos).
+docker compose down -v (Detiene los servicios y borra los datos de la base de datos).
 ```
 
-## 2) Ejecutar la simulación SimPy (reproduce las tablas del informe)
+## 2) Ejecutar la Simulación SimPy
+
+Para correr los modelos de eventos discretos que replican los escenarios del informe:
 
 ```bash
-pip install -r requirements.txt     # simpy, numpy, matplotlib
+1. Instala las dependencias necesarias de Python: 
+pip install -r requirements.txt
+
+2. Ejecuta el orquestador de simulación:
 python simulacion/main.py
 ```
 
-Genera:
+Archivos generados automáticamente:
 
-- `simulacion/resultados_simulacion.json` — KPIs agregados (media ± IC95, p95/p99)
-  de los 3 escenarios con 30 réplicas (semillas 42..71).
-- `docs/figuras/politicas_kpis.png` — comparación de políticas con umbrales SLA.
-- `docs/figuras/perfil_llegadas.png` — perfil de llegadas no estacionario.
+- simulacion/resultados_simulacion.json — KPIs agregados (medias con IC del 95%, percentiles p95/p99) evaluados en 3 escenarios con 30 réplicas (semillas de la 42 a la 71).
 
-## 3) Contraste analítico M/M/c vs. SimPy
+- docs/figuras/politicas_kpis.png — Comparativa de políticas de asignación frente a umbrales de SLA.
+
+- docs/figuras/perfil_llegadas.png — Visualización del perfil de llegadas no estacionario.
+
+## 3) Contraste Analítico M/M/c vs. SimPy
+
+Para validar formalmente el comportamiento estocástico de la simulación frente a los modelos analíticos de colas (Erlang C):
 
 ```bash
 python analisis/contraste_mmc.py
 ```
 
-Genera `docs/tabla_contraste_mmc.md` (tabla de validación + dimensionamiento
-Erlang C) y `docs/figuras/contraste_mmc.png`. La simulación markoviana reproduce
-el modelo M/M/9 analítico con **error < 1.2 %**.
+Salidas: Genera el reporte de validación en docs/tabla_contraste_mmc.md y la gráfica comparativa en docs/figuras/contraste_mmc.png.
+Nota: La simulación markoviana desarrollada reproduce con éxito el modelo analítico M/M/9 con un error menor al 1.2%.
 
-## Reproducir TODO de una vez
+## ⚡ Ejecución Rápida (Todo en uno)
 
 ```bash
-docker compose up --build -d                 # (1) sistema real
-pip install -r requirements.txt
-python simulacion/main.py                     # (2) simulación
-python analisis/contraste_mmc.py             # (3) contraste
-```
+# 1. Levantar contenedores del sistema real
+docker compose up --build -d
 
----
+# 2. Instalar dependencias y correr la simulación
+pip install -r requirements.txt
+python simulacion/main.py
+
+# 3. Ejecutar contraste analítico
+python analisis/contraste_mmc.py
+
+```
 
 ## Estructura del repositorio
 
