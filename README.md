@@ -1,21 +1,18 @@
 # OptiSupport — Gemelo Digital de una Mesa de Soporte Técnico
 
-[![Modelos y Simulación](https://img.shields.io/badge/I.U.%20Pascual%20Bravo-Modelos%20y%20Simulaci%C3%B3n%202026--2-blue?style=flat-square)](https://github.com/Fabian199302/OptiSupport)
-[![Python 3.11+](https://img.shields.io/badge/Python-3.11%252B-yellow.svg?style=flat-square&logo=python&logoColor=white)](https://www.python.org/)
-[![FastAPI](https://img.shields.io/badge/FastAPI-0.100%252B-009688.svg?style=flat-square&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
-[![Docker](https://img.shields.io/badge/Docker-Compose-2496ED.svg?style=flat-square&logo=docker&logoColor=white)](https://www.docker.com/)
-
-Simulación de eventos discretos (**DES**) de un sistema de asignación de tickets de soporte, con una API REST real contenerizada, telemetría integrada, un modelo estocástico en **SimPy** con dos políticas de asignación (patrón *Strategy*) y validación analítica mediante colas **M/M/c**.
-
-> 💡 **Subsanación clave de la Entrega 1:** Se corrigió la inconsistencia de tasas ($\mu = 1/15 = 0.0667$ tickets/min como valor canónico) y se recalibró el sistema a **$c = 9$ técnicos**, logrando una intensidad de tráfico estable de $\rho = 0.833$ ($< 0.85$) en lugar del $\rho = 1.875$ inestable obtenido previamente con $c = 4$. La API y la simulación comparten de forma estricta los mismos parámetros desde `config/parametros.py` (Fuente Única de Verdad).
+> Simulación de eventos discretos (**DES**) de un sistema de asignación de tickets de soporte, con una API REST real contenerizada, telemetría integrada, un modelo estocástico en **SimPy** con dos políticas de asignación (patrón *Strategy*) y validación analítica mediante colas **M/M/c**.
 
 ---
 
-## Integrantes del Grupo3
+### 🏛️ Contexto Académico e Integrantes
+* **Institución:** I.U. Pascual Bravo — Modelos y Simulación (2026-2)
+* **Grupo de Trabajo:** Grupo 3
+* **Integrantes:** 
+  * **Fabian Eliecer Montoya**
+  * **Mateo Corrales**
+  * **Stefanny Higuita**
 
-* **Fabian Eliecer Montoya**
-* **Mateo Corrales**
-* **Stefanny Higuita**
+> 💡 **Subsanación clave de la Entrega 1:** Se corrigió la inconsistencia de tasas ($\mu = 1/15 = 0.0667$ tickets/min como valor canónico) y se recalibró el sistema a **$c = 9$ técnicos**, logrando una intensidad de tráfico estable de $\rho = 0.833$ ($< 0.85$) en lugar del $\rho = 1.875$ inestable obtenido previamente con $c = 4$. La API y la simulación comparten de forma estricta los mismos parámetros desde `config/parametros.py` (Fuente Única de Verdad).
 
 ---
 
