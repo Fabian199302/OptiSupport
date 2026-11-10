@@ -5,9 +5,9 @@
 ---
 
 ### 🏛️ Contexto Académico e Integrantes
-* **Institución:** I.U. Pascual Bravo — Modelos y Simulación (2026-2)
-* **Grupo de Trabajo:** Grupo 3
-* **Integrantes:** 
+- **Institución:** I.U. Pascual Bravo — Modelos y Simulación (2026-2)
+- **Grupo de Trabajo:** Grupo 3
+- **Integrantes:** 
   * **Fabian Eliecer Montoya**
   * **Mateo Corrales**
   * **Stefanny Higuita**
@@ -21,13 +21,13 @@
 2. [Paso 1: Levantar el Sistema Real (API + Base de Datos)](#1-levantar-el-sistema-real-api--base-de-datos)
 3. [Paso 2: Ejecutar la Simulación SimPy](#2-ejecutar-la-simulación-simpy)
 4. [Paso 3: Contraste Analítico M/M/c vs. SimPy](#3-contraste-analítico-mmc-vs-simpy)
-5. [Ejecución Rápida (Todo en uno)](#-ejecución-rápida-todo-en-uno)
-6. [Parámetros del Modelo](#-parámetros-del-modelo)
-7. [Estructura del Repositorio](#-estructura-del-repositorio)
+5. [Ejecución Rápida (Todo en uno)](#ejecución-rápida-todo-en-uno)
+6. [Parámetros del Modelo](#parámetros-del-modelo)
+7. [Estructura del Repositorio](#estructura-del-repositorio)
 
 ---
 
-## 🛠️ Requisitos Previos
+## Requisitos Previos
 
 Asegúrate de tener instalado en tu computadora lo siguiente antes de comenzar:
 - **[Git](https://git-scm.com/)** (para clonar el repositorio).
@@ -40,6 +40,7 @@ Asegúrate de tener instalado en tu computadora lo siguiente antes de comenzar:
 
 ### Clonar el repositorio
 Si aún no lo has descargado en tu máquina local, abre tu terminal y ejecuta:
+
 ```bash
 git clone [https://github.com/Fabian199302/OptiSupport.git](https://github.com/Fabian199302/OptiSupport.git)
 cd OptiSupport
@@ -126,6 +127,18 @@ python simulacion/main.py
 python analisis/contraste_mmc.py
 
 ```
+## Parámetros del modelo (coherentes entre API y simulación)
+
+| Parámetro               | Valor                                        | Nota                      |
+| :---------------------- | :------------------------------------------- | :------------------------ |
+| λ (valle / pico)        | 0.5 / 1.5 tickets/min                        | llegadas no estacionarias |
+| Tiempo de servicio      | 15 min (μ = 0.0667/min)                      | valor canónico corregido  |
+| Técnicos (c)            | 9                                            | ρ = 0.833 (estable)       |
+| Pool de conexiones (C6) | 50                                           | límite físico duro        |
+| Paciencia (abandono)    | Normal(30, 5) min                            | reintento p=0.40, máx. 2  |
+| SLA                     | p95 < 45 min · abandono < 3 % · util 70–85 % | —                         |
+
+Ver el informe completo en [`docs/INFORME_FINAL.md`](docs/INFORME_FINAL.md).
 
 ## Estructura del repositorio
 
@@ -157,16 +170,3 @@ OptiSupport/
     ├── tabla_contraste_mmc.md  # tabla de validación generada
     └── figuras/                # gráficas generadas por la simulación
 ```
-
-## Parámetros del modelo (coherentes entre API y simulación)
-
-| Parámetro               | Valor                                        | Nota                      |
-| :---------------------- | :------------------------------------------- | :------------------------ |
-| λ (valle / pico)        | 0.5 / 1.5 tickets/min                        | llegadas no estacionarias |
-| Tiempo de servicio      | 15 min (μ = 0.0667/min)                      | valor canónico corregido  |
-| Técnicos (c)            | 9                                            | ρ = 0.833 (estable)       |
-| Pool de conexiones (C6) | 50                                           | límite físico duro        |
-| Paciencia (abandono)    | Normal(30, 5) min                            | reintento p=0.40, máx. 2  |
-| SLA                     | p95 < 45 min · abandono < 3 % · util 70–85 % | —                         |
-
-Ver el informe completo en [`docs/INFORME_FINAL.md`](docs/INFORME_FINAL.md).
