@@ -21,8 +21,8 @@
 2. [Paso 1: Levantar el Sistema Real (API + Base de Datos)](#1-levantar-el-sistema-real-api--base-de-datos)
 3. [Paso 2: Ejecutar la Simulación SimPy](#2-ejecutar-la-simulación-simpy)
 4. [Paso 3: Contraste Analítico M/M/c vs. SimPy](#3-contraste-analítico-mmc-vs-simpy)
-5. [Ejecución Rápida (Todo en uno)](#ejecución-rápida-todo-en-uno)
-6. [Parámetros del Modelo](#parámetros-del-modelo)
+5. [Ejecución Rápida (Todo en uno)](#-ejecución-rápida-todo-en-uno)
+6. [Parámetros del Modelo](#parámetros-del-modelo-coherentes-entre-api-y-simulación)
 7. [Estructura del Repositorio](#estructura-del-repositorio)
 
 ---
