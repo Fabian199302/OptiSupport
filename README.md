@@ -12,6 +12,7 @@ Simulación de eventos discretos (**DES**) de un sistema de asignación de ticke
 ---
 
 ## Integrantes del Grupo3
+
 * **Fabian Eliecer Montoya**
 * **Mateo Corrales**
 * **Stefanny Higuita**
