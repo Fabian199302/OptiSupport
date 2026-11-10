@@ -44,6 +44,7 @@ Si aún no lo has descargado en tu máquina local, abre tu terminal y ejecuta:
 ```bash
 git clone [https://github.com/Fabian199302/OptiSupport.git](https://github.com/Fabian199302/OptiSupport.git)
 cd OptiSupport
+```
 
 ## 1) Levantar el Sistema Real (API + Base de Datos)
 
