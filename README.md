@@ -99,6 +99,8 @@ Archivos generados automáticamente:
 
 - simulacion/resultados_simulacion.json — KPIs agregados (medias con IC del 95%, percentiles p95/p99) evaluados en 3 escenarios con 30 réplicas (semillas de la 42 a la 71).
 
+- Resumen en consola en tablas Markdown: validación M/M/c, comparación de políticas, cumplimiento de SLA y totales de tickets.
+
 - docs/figuras/politicas_kpis.png — Comparativa de políticas de asignación frente a umbrales de SLA.
 
 - docs/figuras/perfil_llegadas.png — Visualización del perfil de llegadas no estacionario.

@@ -78,7 +78,107 @@ def correr_escenario(modo: str, estrategia_nombre: str) -> Dict:
     return agregado
 
 
+def _formatear_media_ic(kpi: Dict[str, float], escala: float = 1.0,
+                        decimales: int = 1) -> str:
+    """Formatea la media y el semiancho del IC95 de un KPI."""
+    formato = f"{{:.{decimales}f}}"
+    return (f"{formato.format(kpi['media'] * escala)} ± "
+            f"{formato.format(kpi['ic95_semiancho'] * escala)}")
+
+
+def _estado_sla(cumple: bool) -> str:
+    return "✔" if cumple else "✗"
+
+
+def imprimir_reporte(resultados: Dict[str, Dict]) -> None:
+    """Imprime el resumen de resultados en tablas Markdown legibles."""
+    escenarios = resultados["escenarios"]
+    markov = escenarios["markoviano_base"]
+    rr = escenarios["roundrobin_real"]
+    sb = escenarios["skillbased_real"]
+
+    print("\n# Resultados de la simulación")
+    print(
+        f"Jornada: {P.horizonte_min:.0f} min; warm-up: {P.warmup_min:.0f} min; "
+        f"{P.n_replicas} réplicas (semillas {P.semilla_base}–"
+        f"{P.semilla_base + P.n_replicas - 1}); técnicos: {P.c_tecnicos}."
+    )
+
+    print("\n## Validación M/M/c (SimPy markoviano)")
+    print("| Métrica | SimPy (media ± IC 95 %) |")
+    print("|---|---:|")
+    metricas_markov = (
+        ("Utilización", "utilizacion", 100, 1, "%"),
+        ("Longitud media de cola (Lq)", "Lq_medio", 1, 3, " tickets"),
+        ("Espera media en cola (Wq)", "Wq_medio_min", 1, 2, " min"),
+        ("Tiempo medio en el sistema (W)", "W_medio_min", 1, 2, " min"),
+        ("Longitud media en sistema (L)", "L_medio", 1, 3, " tickets"),
+    )
+    for etiqueta, clave, escala, decimales, unidad in metricas_markov:
+        print(
+            f"| {etiqueta} | "
+            f"{_formatear_media_ic(markov[clave], escala, decimales)}{unidad} |"
+        )
+
+    p95_rr = rr["W_p95_min"]["media"]
+    p95_sb = sb["W_p95_min"]["media"]
+    abandono_rr = rr["tasa_abandono"]["media"]
+    abandono_sb = sb["tasa_abandono"]["media"]
+    utilizacion_rr = rr["utilizacion"]["media"]
+    utilizacion_sb = sb["utilizacion"]["media"]
+    util_min, util_max = P.sla_utilizacion_min, P.sla_utilizacion_max
+
+    print("\n## Comparación de políticas y SLA")
+    print("| KPI (con unidad) | Umbral SLA | Round Robin (media ± IC95 / p95) | Skill-Based (media ± IC95 / p95) | ¿Cumple SLA? |")
+    print("|---|---:|---:|---:|---|")
+    print(
+        f"| Tiempo total de atención (min) | p95 < {P.sla_p95_atencion_min:.0f} min "
+        f"| {_formatear_media_ic(rr['W_medio_min'])} / **{p95_rr:.1f}** "
+        f"| {_formatear_media_ic(sb['W_medio_min'])} / **{p95_sb:.1f}** "
+        f"| RR {_estado_sla(p95_rr < P.sla_p95_atencion_min)} · "
+        f"SB {_estado_sla(p95_sb < P.sla_p95_atencion_min)} |"
+    )
+    print(
+        f"| Tasa de abandono (%) | < {100 * P.sla_abandono_max:.1f} % "
+        f"| {_formatear_media_ic(rr['tasa_abandono'], 100)} % "
+        f"| {_formatear_media_ic(sb['tasa_abandono'], 100)} % "
+        f"| RR {_estado_sla(abandono_rr < P.sla_abandono_max)} · "
+        f"SB {_estado_sla(abandono_sb < P.sla_abandono_max)} |"
+    )
+    print(
+        f"| Utilización de técnicos (%) | {100 * util_min:.0f}–{100 * util_max:.0f} % "
+        f"| {_formatear_media_ic(rr['utilizacion'], 100)} % "
+        f"| {_formatear_media_ic(sb['utilizacion'], 100)} % "
+        f"| RR {_estado_sla(util_min <= utilizacion_rr <= util_max)} · "
+        f"SB {_estado_sla(util_min <= utilizacion_sb <= util_max)} |"
+    )
+    print(
+        f"| Espera media en cola Wq (min) | Referencia "
+        f"| {_formatear_media_ic(rr['Wq_medio_min'])} "
+        f"| {_formatear_media_ic(sb['Wq_medio_min'])} | — |"
+    )
+    print(
+        f"| p99 tiempo total (min) | Referencia "
+        f"| {_formatear_media_ic(rr['W_p99_min'])} "
+        f"| {_formatear_media_ic(sb['W_p99_min'])} | — |"
+    )
+
+    print("\nTickets contabilizados (suma de réplicas):")
+    print("| Política | Resueltos | Abandonados | Reintentos | Rechazados |")
+    print("|---|---:|---:|---:|---:|")
+    for etiqueta, escenario in (("Round Robin", rr), ("Skill-Based", sb)):
+        totales = escenario["totales"]
+        print(
+            f"| {etiqueta} | {totales['resueltos']:,} | "
+            f"{totales['abandonados']:,} | {totales['reintentos']:,} | "
+            f"{totales['rechazados']:,} |".replace(",", " ")
+        )
+
+
 def main() -> None:
+    if hasattr(sys.stdout, "reconfigure"):
+        sys.stdout.reconfigure(encoding="utf-8")
+
     print("=" * 70)
     print(" OptiSupport  ·  Simulacion DES  (SimPy)")
     print("=" * 70)
@@ -106,6 +206,8 @@ def main() -> None:
         print(f"      W_p95 = {r['W_p95_min']['media']:.2f} min   "
               f"abandono = {100 * r['tasa_abandono']['media']:.2f}%   "
               f"utilizacion = {100 * r['utilizacion']['media']:.1f}%")
+
+    imprimir_reporte(resultados)
 
     RUTA_JSON.parent.mkdir(parents=True, exist_ok=True)
     with open(RUTA_JSON, "w", encoding="utf-8") as f:

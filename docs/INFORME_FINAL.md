@@ -4,16 +4,16 @@
 
 - **Curso:** Modelos y Simulación (2026-2) — I.U. Pascual Bravo
 - **Grupo:** Grupo 3
-- **Repositorio:** https://github.com/Mathewcv/OptiSupport
+- **Repositorio:** https://github.com/Fabian199302/OptiSupport
 - **Comando de despliegue API:** `docker compose up --build -d`
 - **Comando de ejecución SimPy:** `python simulacion/main.py`
 - **Comando de contraste M/M/c:** `python analisis/contraste_mmc.py`
 
-| Integrante                        | Correo Institucional                  | Rol Ejecutado                          | Commits Principales (Módulos)         |
-| :-------------------------------- | :------------------------------------ | :------------------------------------- | :------------------------------------ |
-| Yulisa Stefanny Higuita Rodríguez | yulisa.higuita602@pascualbravo.edu.co | Modelado DES / SimPy                   | `simulacion/`                         |
-| Fabián Eliécer Montoya            | f.montoya@pascualbravo.edu.co         | Infraestructura / API / Telemetría     | `sistema_real/`, `docker-compose.yml` |
-| Mateo Corrales Vinasco            | mateo.corrales571@pascualbravo.edu.co | Análisis Estadístico / Contraste M/M/c | `analisis/`, `docs/`                  |
+| Integrante | Correo institucional | Rol y módulos |
+|---|---|---|
+| Yulisa Stefanny Higuita Rodríguez | yulisa.higuita602@pascualbravo.edu.co | Modelado DES / SimPy<br>`simulacion/` |
+| Fabián Eliécer Montoya | f.montoya@pascualbravo.edu.co | Infraestructura / API / Telemetría<br>`sistema_real/`, `docker-compose.yml` |
+| Mateo Corrales Vinasco | mateo.corrales571@pascualbravo.edu.co | Análisis estadístico / Contraste M/M/c<br>`analisis/`, `docs/` |
 
 ---
 
@@ -31,14 +31,14 @@ OptiSupport es un gemelo digital de una mesa de soporte técnico donde llegan ti
 
 ### 2.2 Tabla de Subsanación de la Entrega Parcial 1
 
-| Observación / Error en Entrega 1                                                                                                                                        | Corrección Implementada en la Entrega Final                                                                                                     | Archivo / Línea en el Repositorio                                 |
-| :---------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------- | :---------------------------------------------------------------- |
-| **Inconsistencia matemática de tasas:** el texto declaraba 15 min/ticket (μ=0.0667) pero se mencionaba 0.2 tickets/min (5 min/ticket), con ρ=1.875 (sistema inestable). | Se fija **una sola tasa canónica** μ = 1/15 = 0.0667 tickets/min, derivada siempre de `tiempo_servicio_min`; se elimina la tasa espuria de 0.2. | `config/parametros.py` (`mu`, propiedad derivada)                 |
-| **Sistema base inestable (ρ=1.875 con c=4).**                                                                                                                           | Se recalibra el número de técnicos a **c = 9**, con lo que **ρ = 0.833 < 0.85** (estable y dentro del objetivo).                                | `config/parametros.py` (`c_tecnicos=9`, `rho_base`)               |
-| **Repositorio vacío:** `docker-compose.yml` de 0 bytes y sin código.                                                                                                    | Repositorio **funcional y reproducible**: API FastAPI + PostgreSQL en Docker, telemetría a CSV, SimPy completo y contraste M/M/c.               | `docker-compose.yml`, `sistema_real/`, `simulacion/`, `analisis/` |
-| **Faltaba enrutamiento por habilidades.**                                                                                                                               | Patrón **Strategy** con `RoundRobinStrategy` y `SkillBasedRoutingStrategy` intercambiables.                                                     | `simulacion/estrategias.py`                                       |
-| **Parámetros desalineados entre código y documento.**                                                                                                                   | API y simulación importan los mismos valores desde **una única fuente de verdad**.                                                              | `config/parametros.py` (`P`)                                      |
-| **Faltaban fórmulas y umbrales explícitos de KPIs.**                                                                                                                    | Fórmulas M/M/c y Ley de Little explícitas; umbrales SLA codificados y graficados.                                                               | `analisis/contraste_mmc.py`, §4 y §5                              |
+| Problema detectado | Corrección y ubicación |
+|---|---|
+| Tasas inconsistentes: servicio de 15 min/ticket frente a 0.2 tickets/min, con ρ=1.875. | Se establece μ = 1/15 = 0.0667 tickets/min como tasa única, derivada de `tiempo_servicio_min`.<br>**Archivo:** `config/parametros.py` |
+| Sistema inestable con c=4 técnicos (ρ=1.875). | Se calibra el sistema con c=9, para obtener ρ=0.833.<br>**Archivo:** `config/parametros.py` (`c_tecnicos`, `rho_base`) |
+| Repositorio inicialmente vacío. | Se implementan API FastAPI, PostgreSQL, telemetría, simulación SimPy y contraste M/M/c.<br>**Archivos:** `docker-compose.yml`, `sistema_real/`, `simulacion/`, `analisis/` |
+| Sin enrutamiento por habilidades. | Se implementan las estrategias Round Robin y Skill-Based Routing.<br>**Archivo:** `simulacion/estrategias.py` |
+| Parámetros diferentes entre la API y la simulación. | Ambos componentes usan una fuente única de parámetros.<br>**Archivo:** `config/parametros.py` (`P`) |
+| Sin fórmulas ni umbrales explícitos para los KPI. | Se documentan Erlang C y la Ley de Little; los umbrales SLA se implementan y grafican.<br>**Archivos:** `analisis/contraste_mmc.py`, §§4–5 |
 
 ## 3. Arquitectura del Prototipo, Telemetría y Parámetros Calibrados
 
@@ -48,16 +48,16 @@ La arquitectura desplegada son **dos contenedores**: `api` (FastAPI/Uvicorn) y `
 
 ### 3.2 Parámetros y Distribuciones de Entrada del Modelo SimPy
 
-| Parámetro                            | Etapa / Proceso  | Distribución y Parámetros Exactos                               | Unidad      | Fuente / Evidencia                   |
-| :----------------------------------- | :--------------- | :-------------------------------------------------------------- | :---------- | :----------------------------------- |
-| Tasa de llegada (valle / pico)       | Entrada          | Poisson no homogénea (λ₁=0.5 valle, λ₂=1.5 pico) por _thinning_ | tickets/min | Entrega 1 §7; `config/parametros.py` |
-| Tiempo de servicio (modo real)       | Atención técnico | Lognormal (media=15, σ_log=0.5)                                 | min         | μ canónico; cola larga realista      |
-| Tiempo de servicio (modo markoviano) | Atención técnico | Exponencial (media=15)                                          | min         | Contraste M/M/c                      |
-| Bono de especialista (Skill-Based)   | Atención técnico | factor 0.80 sobre la media (15 → 12 min)                        | —           | Garnett & Mandelbaum (2000)          |
-| Paciencia (abandono, C7)             | Cola             | Normal(30, 5) truncada en 5                                     | min         | Entrega 1 §8                         |
-| Reintento                            | Post-abandono    | p=0.40; espera Exp(media=10); máx. 2                            | —           | `config/parametros.py`               |
-| Validación/registro (pool C6)        | API              | constante 0.8 s                                                 | s           | `telemetry_log.csv`                  |
-| Pool de conexiones (C6)              | API              | Recurso de capacidad 50                                         | conexiones  | `database.py` (`pool_size=50`)       |
+| Parámetro | Modelo y unidad | Fuente |
+|---|---|---|
+| Llegadas (valle / pico) | Poisson no homogéneo: λ=0.5 / 1.5 tickets/min, por _thinning_ | `config/parametros.py`; Entrega 1, §7 |
+| Servicio real | Lognormal: media 15 min, σ_log=0.5 | μ canónico; cola larga realista |
+| Servicio markoviano | Exponencial: media 15 min | Contraste M/M/c |
+| Factor de especialista (Skill-Based) | 0.80; reduce la media de 15 a 12 min | Garnett & Mandelbaum (2000) |
+| Paciencia (C7) | Normal(30, 5) min, truncada en 5 min | Entrega 1, §8 |
+| Reintento | Probabilidad 0.40; espera Exp(media 10 min); máximo 2 | `config/parametros.py` |
+| Validación y registro (C6) | Constante: 0.8 s | `telemetry_log.csv` |
+| Pool de conexiones (C6) | Capacidad: 50 conexiones | `database.py` (`pool_size=50`) |
 
 ## 4. Diseño Experimental y Contraste Analítico (M/M/c vs. SimPy)
 
@@ -69,14 +69,14 @@ La arquitectura desplegada son **dos contenedores**: `api` (FastAPI/Uvicorn) y `
 
 Modelo M/M/9 con λ=0.5, μ=0.0667, a=λ/μ=7.5 Erlangs, ρ=0.8333. Fórmula C de Erlang.
 
-| Métrica                        | Modelo Analítico M/M/c | SimPy Markoviano (Media ± IC 95 %) | Diferencia Relativa (%) |
-| :----------------------------- | :--------------------: | :--------------------------------: | :---------------------: |
-| Utilización (ρ)                |         0.833          |           0.825 ± 0.011            |         −1.06 %         |
-| Probabilidad de espera (Pw)    |         0.509          |                 —                  |            —            |
-| Longitud media de cola (Lq)    |     2.546 tickets      |           2.517 ± 0.592            |         −1.13 %         |
-| Tiempo medio en cola (Wq)      |       5.091 min        |           5.032 ± 1.190            |         −1.17 %         |
-| Tiempo medio en el sistema (W) |       20.091 min       |           20.000 ± 1.303           |         −0.45 %         |
-| Longitud media en sistema (L)  |     10.046 tickets     |           9.985 ± 0.662            |         −0.60 %         |
+| Métrica | Analítico M/M/c | SimPy: media ± IC 95 % | Diferencia |
+|---|---:|---:|---:|
+| Utilización (ρ) | 0.833 | 0.825 ± 0.011 | −1.06 % |
+| Probabilidad de espera (Pw) | 0.509 | — | — |
+| Longitud media de cola (Lq), tickets | 2.546 | 2.517 ± 0.592 | −1.13 % |
+| Espera media en cola (Wq), min | 5.091 | 5.032 ± 1.190 | −1.17 % |
+| Tiempo medio en sistema (W), min | 20.091 | 20.000 ± 1.303 | −0.45 % |
+| Longitud media en sistema (L), tickets | 10.046 | 9.985 ± 0.662 | −0.60 % |
 
 **Ley de Little (verificación):** L = λ·W = 0.5 × 20.091 = 10.046 ≈ L. También Lq = λ·Wq = 0.5 × 5.091 = 2.546 ≈ Lq. La simulación reproduce el modelo analítico con **error < 1.2 %** en todas las métricas, validando el motor.
 
@@ -86,13 +86,24 @@ Modelo M/M/9 con λ=0.5, μ=0.0667, a=λ/μ=7.5 Erlangs, ρ=0.8333. Fórmula C d
 
 ### 5.1 Comparación Cuantitativa de Escenarios
 
-| KPI (con unidad)                      |  Umbral SLA  | Política Actual — Round Robin (Media ± IC95 \| p95) | Política Alternativa — Skill-Based (Media ± IC95 \| p95) |    ¿Cumple SLA?     |
-| :------------------------------------ | :----------: | :-------------------------------------------------: | :------------------------------------------------------: | :-----------------: |
-| Tiempo total de atención (min)        | p95 < 45 min |               21.8 ± 0.6 \| **44.1**                |                  17.0 ± 0.6 \| **37.7**                  | RR ✔ límite · SB ✔  |
-| Tasa de abandono (%)                  |   < 3.0 %    |                  **13.7 % ± 2.0**                   |                     **5.4 % ± 1.3**                      | RR ✗ · SB se acerca |
-| Utilización del cuello de botella (%) | 70 % – 85 %  |                  **88.1 % ± 1.8**                   |                     **77.7 % ± 2.1**                     | RR ✗ (sobre) · SB ✔ |
-| Espera en cola Wq (min)               |  referencia  |                      7.0 ± 0.5                      |                        5.0 ± 0.5                         |          —          |
-| p99 tiempo total (min)                |  referencia  |                     54.9 ± 2.0                      |                        46.7 ± 1.4                        |          —          |
+**Resultados por política.** Los valores son media ± IC 95 %. Para p95 y p99 se muestra el promedio del percentil calculado en cada réplica.
+
+| Indicador | Round Robin | Skill-Based |
+|---|---:|---:|
+| Tiempo total, media (min) | 21.8 ± 0.6 | 17.0 ± 0.6 |
+| Tiempo total, p95 (min) | 44.1 ± 1.0 | 37.7 ± 1.3 |
+| Tiempo total, p99 (min) | 54.9 ± 2.0 | 46.7 ± 1.4 |
+| Espera en cola Wq, media (min) | 7.0 ± 0.5 | 5.0 ± 0.5 |
+| Abandono (%) | 13.7 ± 2.0 | 5.4 ± 1.3 |
+| Utilización de técnicos (%) | 88.1 ± 1.8 | 77.7 ± 2.1 |
+
+**Cumplimiento de los SLA con c=9 técnicos:**
+
+| Indicador | Objetivo | Round Robin | Skill-Based |
+|---|---:|---|---|
+| p95 del tiempo total | < 45 min | Cumple (44.1 min) | Cumple (37.7 min) |
+| Abandono | < 3 % | No cumple (13.7 %) | No cumple (5.4 %) |
+| Utilización | 70–85 % | No cumple (88.1 %) | Cumple (77.7 %) |
 
 Tickets procesados (30 réplicas): Round Robin resolvió 6 563 y abandonaron 1 134 (447 reintentos); Skill-Based resolvió 7 242 y abandonaron 437 (176 reintentos). Figura: `docs/figuras/politicas_kpis.png`.
 
@@ -109,8 +120,10 @@ Desplegar **Skill-Based Routing** como política de producción: con el mismo pe
 
 ### 6.2 Declaración de Uso de Inteligencia Artificial
 
-| Herramienta de IA                    | Secciones / Módulos donde se utilizó                                                             | Qué verificó, corrigió y validó el equipo                                                                                                                                                                     |
-| :----------------------------------- | :----------------------------------------------------------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Asistente de IA (modelo de lenguaje) | Estructuración del repositorio, redacción de documentación y refactorización de clases SimPy/API | El equipo verificó manualmente las ecuaciones M/M/c, ejecutó el contraste numérico (error < 1.2 %), revisó la coherencia de parámetros entre código y documento y validó los KPIs con 30 réplicas semilladas. |
+| Aspecto | Declaración |
+|---|---|
+| Herramienta | Asistente de IA (modelo de lenguaje) |
+| Uso | Estructuración del repositorio, redacción de documentación y refactorización de clases SimPy/API |
+| Verificación del equipo | Se revisaron manualmente las ecuaciones M/M/c y la coherencia de parámetros entre código y documento. También se ejecutó el contraste numérico (error < 1.2 %) y se validaron los KPI con 30 réplicas semilladas. |
 
 La responsabilidad sobre el modelo, los supuestos, los cálculos y las decisiones de diseño corresponde al equipo.
