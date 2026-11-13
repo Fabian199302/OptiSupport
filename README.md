@@ -21,9 +21,10 @@
 2. [Paso 1: Levantar el Sistema Real (API + Base de Datos)](#1-levantar-el-sistema-real-api--base-de-datos)
 3. [Paso 2: Ejecutar la Simulación SimPy](#2-ejecutar-la-simulación-simpy)
 4. [Paso 3: Contraste Analítico M/M/c vs. SimPy](#3-contraste-analítico-mmc-vs-simpy)
-5. [Ejecución Rápida (Todo en uno)](#-ejecución-rápida-todo-en-uno)
-6. [Parámetros del Modelo](#parámetros-del-modelo-coherentes-entre-api-y-simulación)
-7. [Estructura del Repositorio](#estructura-del-repositorio)
+5. [Paso 4: Análisis de sensibilidad](#4-análisis-de-sensibilidad)
+6. [Ejecución Rápida (Todo en uno)](#-ejecución-rápida-todo-en-uno)
+7. [Parámetros del Modelo](#parámetros-del-modelo-coherentes-entre-api-y-simulación)
+8. [Estructura del Repositorio](#estructura-del-repositorio)
 
 ---
 
@@ -116,6 +117,16 @@ python analisis/contraste_mmc.py
 Salidas: Genera el reporte de validación en docs/tabla_contraste_mmc.md y la gráfica comparativa en docs/figuras/contraste_mmc.png.
 Nota: La simulación markoviana desarrollada reproduce con éxito el modelo analítico M/M/9 con un error menor al 1.2%.
 
+## 4) Análisis de sensibilidad
+
+Para analizar el efecto del factor de servicio especialista, el número de técnicos y el límite del pool C6:
+
+```bash
+python analisis/sensibilidad.py
+```
+
+El script ejecuta 30 réplicas por escenario, usando las semillas configuradas en el modelo, e imprime tablas Markdown con medias, IC 95 %, percentiles y rechazos.
+
 ## ⚡ Ejecución Rápida (Todo en uno)
 
 ```bash
@@ -128,6 +139,9 @@ python simulacion/main.py
 
 # 3. Ejecutar contraste analítico
 python analisis/contraste_mmc.py
+
+# 4. Ejecutar análisis de sensibilidad
+python analisis/sensibilidad.py
 
 ```
 ## Parámetros del modelo (coherentes entre API y simulación)
@@ -165,7 +179,8 @@ OptiSupport/
 │   ├── modelo.py               # SimuladorOrquestador (llegadas, abandono, reintentos)
 │   └── main.py                 # corre réplicas -> resultados_simulacion.json
 ├── analisis/
-│   └── contraste_mmc.py        # Erlang C vs SimPy -> tabla Markdown
+│   ├── contraste_mmc.py        # Erlang C vs SimPy -> tabla Markdown
+│   └── sensibilidad.py         # Analisis de sensibilidad del modelo DES
 ├── datos/
 │   └── telemetry_log.csv       # telemetría capturada por la API
 └── docs/
